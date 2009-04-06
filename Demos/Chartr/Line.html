@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Line Chart | Chartr Examples</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.1/mootools-yui-compressed.js"></script>
+<script type="text/javascript" src="../../Source/Chartr/Chartr.js"></script>
+<script type="text/javascript">
+window.addEvent('domready',function(){
+	var line = new Chartr("line-chart",{ type:'Line', xLabel: 'X axis label (m)', yLabel: 'Y axis label (m)' });
+	line.call('plot',[{points:[[20,30,'Tooltips can be used to <em>describe</em> a point'],[40,41],[65,25,'They support <strong style="color:red;">HTML</strong>']]},{pointSize:10},1]);
+});
+</script>
+<style type="text/css">
+.border { border:1px solid #000; padding:0px; }
+span.chartr-axis-x, span.chartr-axis-y { color:#000; font-size:11px; position:absolute; }
+div.chartr-label-x, div.chartr-label-y { border:1px solid #666; padding:4px; }
+div.chartr-tooltip { position:absolute; border: 2px solid #000; background-color: #262626; padding: 0.5em; -webkit-border-radius: 3px; -moz-border-radius: 3px; white-space: nowrap; z-index: 250; color: #fff; font-size: 11px; line-height: 1.3em; text-align: left }
+</style>
+</head>
+
+<body>
+
+<h1>Line chart example:</h1>
+<canvas id="line-chart" height="300" width="500" class="border"></canvas>
+
+</body>
+</html>
