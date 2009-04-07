@@ -707,11 +707,6 @@ Chartr.Types.Pie = new Class({
 		this.fireEvent('beforeDataPlotted',this.parent);
 				
 	    var cx = this.el.getContext('2d');
-		
-		// combined values
-		var totalstartdeg = 0;
-		var totalenddeg = 0;
-		
 		this.data.slices.each(function(s,i){
 			
 			if(s.length > 4){
