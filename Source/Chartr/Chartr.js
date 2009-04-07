@@ -640,7 +640,7 @@ Chartr.Types.Pie = new Class({
 	Implements: [Options,Events],
 	
 	options: {
-		colors: ['#cc0000','#00cc00','#0000cc']
+		colors: ['#cc0000','#00cc00','#0000cc','#ffcc00']
 	},
 	
 	initialize: function(el,parent,options){
@@ -756,16 +756,27 @@ Chartr.Types.Pie = new Class({
 						}
 					}
 					
-					// (5) is 90 > start and end > 270
+					// (5) if 90 > start and end > 270
 					if((startdeg < 90) && (enddeg >= 270)){
 						if(this.mousex > 0){
-							if(Math.tan(s[3]) > div2) mouseon = true;	
+							if(this.mousey > 0){
+								if(Math.tan(s[3]) < div) mouseon = true;	
+							} else {
+								mouseon = true;
+							}
 						} else {
 							if(this.mousey < 0){
-								if(Math.tan(s[4]) < div) mouseon = true;	
+								mouseon = true;	
 							} else {
 								if(Math.tan(s[4]) > div) mouseon = true;
 							}
+						}
+					}
+					
+					// (6) if start > 270 and end > 270
+					if((startdeg >= 270) && (enddeg >= 270)){
+						if((this.mousex < 0) && (this.mousey > 0)){
+							if(Math.tan(s[3]) < div) mouseon = true;
 						}
 					}
 					
