@@ -165,12 +165,12 @@ Chartr.Types.Line = new Class({
 		};
 		
 		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
+		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
 		this.el.getParent().adopt(this.tip);
 		
 		// show x label?
 		if(this.options.xLabel != ''){
-			var d = new Element('div',{html:this.options.xLabel}).addClass(this.parent.options.cssclass+'label-x').setStyle('display','none');
+			var d = new Element('div',{html:this.options.xLabel}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'label-x').setStyle('display','none');
 			this.parent.container.adopt(d);
 			d.setStyles({
 				position:'absolute',
@@ -183,7 +183,7 @@ Chartr.Types.Line = new Class({
 		
 		// show y label?
 		if(this.options.yLabel != ''){
-			var d = new Element('div',{html:this.options.yLabel}).addClass(this.parent.options.cssclass+'label-y').setStyle('display','none');
+			var d = new Element('div',{html:this.options.yLabel}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'label-y').setStyle('display','none');
 			this.parent.container.adopt(d);
 			d.setStyles({
 				position:'absolute',
@@ -224,7 +224,7 @@ Chartr.Types.Line = new Class({
 			cx.closePath();
 			cx.stroke();
 			if(this.options.showXAxisMarkerValues){
-				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass+'axis-x');
+				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-x');
 				this.parent.container.adopt(label);
 				label.setStyles({
 					top: y + parseInt(this.el.getStyle('padding-top')) + this.options.axisMarkerSize + 'px',
@@ -251,7 +251,7 @@ Chartr.Types.Line = new Class({
 			cx.closePath();
 			cx.stroke();
 			if(this.options.showYAxisMarkerValues){
-				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass+'axis-y');
+				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-y');
 				this.parent.container.adopt(label);
 				label.setStyles({
 					top: y + parseInt(this.el.getStyle('padding-top')) - (label.getSize().y / 3) + 'px',
@@ -386,8 +386,8 @@ Chartr.Types.Line = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.el.getParent().getElements('div').each(function(e){e.dispose();},this);
-		this.el.getParent().getElements('span').each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
 		this.drawAxes();
 		this.plotted.each(function(d){ this.plotData(d.data,d.scheme); },this);
 	},
@@ -462,12 +462,12 @@ Chartr.Types.Bar = new Class({
 		};
 		
 		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
+		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
 		this.el.getParent().adopt(this.tip);
 		
 		// show x label?
 		if(this.options.xLabel != ''){
-			var d = new Element('div',{html:this.options.xLabel}).addClass(this.parent.options.cssclass+'label-x').setStyle('display','none');
+			var d = new Element('div',{html:this.options.xLabel}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'label-x').setStyle('display','none');
 			this.parent.container.adopt(d);
 			d.setStyles({
 				position:'absolute',
@@ -480,7 +480,7 @@ Chartr.Types.Bar = new Class({
 		
 		// show y label?
 		if(this.options.yLabel != ''){
-			var d = new Element('div',{html:this.options.yLabel}).addClass(this.parent.options.cssclass+'label-y').setStyle('display','none');
+			var d = new Element('div',{html:this.options.yLabel}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'label-y').setStyle('display','none');
 			this.parent.container.adopt(d);
 			d.setStyles({
 				position:'absolute',
@@ -519,7 +519,7 @@ Chartr.Types.Bar = new Class({
 			cx.closePath();
 			cx.stroke();
 			if(this.options.showXAxisMarkerValues){
-				var label = new Element('span',{html:p[0]}).addClass(this.parent.options.cssclass+'axis-x');
+				var label = new Element('span',{html:p[0]}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-x');
 				this.parent.container.adopt(label);
 				label.setStyles({
 					top: y + parseInt(this.el.getStyle('padding-top')) + this.options.axisMarkerSize + 'px',
@@ -546,7 +546,7 @@ Chartr.Types.Bar = new Class({
 			cx.closePath();
 			cx.stroke();
 			if(this.options.showYAxisMarkerValues){
-				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass+'axis-y');
+				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-y');
 				this.parent.container.adopt(label);
 				label.setStyles({
 					top: y + parseInt(this.el.getStyle('padding-top')) - (label.getSize().y / 3) + 'px',
@@ -628,8 +628,8 @@ Chartr.Types.Bar = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.el.getParent().getElements('div').each(function(e){e.dispose();},this);
-		this.el.getParent().getElements('span').each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
 		this.plotData();
 	}
 							 
@@ -694,7 +694,7 @@ Chartr.Types.Pie = new Class({
 		};
 		
 		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
+		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
 		this.el.getParent().adopt(this.tip);
 		
 		// work out where to put our pie
@@ -843,8 +843,8 @@ Chartr.Types.Pie = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.el.getParent().getElements('div').each(function(e){e.dispose();},this);
-		this.el.getParent().getElements('span').each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+		this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
 		this.plotData();
 	}
 							 
