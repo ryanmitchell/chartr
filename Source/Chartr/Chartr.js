@@ -356,6 +356,7 @@ Chartr.Types.Line = new Class({
 								left: pointx + 10 + 'px',
 								top: pointy - 20 + 'px'
 							});
+							this.fireEvent('showTip',this.parent);
 						}
 					}
 				}
@@ -581,6 +582,7 @@ Chartr.Types.Bar = new Class({
 								left: this.mousex + 10 + 'px',
 								top: this.mousey - 20 + 'px'
 							});
+							this.fireEvent('showTip',this.parent);
 						}
 					}
 				}
@@ -788,6 +790,7 @@ Chartr.Types.Pie = new Class({
 								left: this.tipmousex + 10 + 'px',
 								top: this.tipmousey - 20 + 'px'
 							});
+							this.fireEvent('showTip',this.parent);
 						}
 					}
 											
