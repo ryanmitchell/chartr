@@ -707,12 +707,84 @@ Chartr.Types.Pie = new Class({
 		this.fireEvent('beforeDataPlotted',this.parent);
 				
 	    var cx = this.el.getContext('2d');
+		
+		// combined values
+		var totalstartdeg = 0;
+		var totalenddeg = 0;
+		
 		this.data.slices.each(function(s,i){
 			
 			if(s.length > 4){
 						
 				if(Math.abs(s[4] - s[3]) > 0.001){
-						
+					
+					// work out if mouse is inside this one
+					var mouseon = false;
+					var div = this.mousex/this.mousey;
+					var div2 = this.mousey/this.mousex;
+					var startdeg = (s[3] * 180) / Math.PI;
+					var enddeg = (s[4] * 180) / Math.PI;
+					
+					// (1) if start,end < 90 or start,end > 270
+					if((this.mousex > 0) && (this.mousey > 0)){
+						if(((startdeg < 90) && (enddeg < 90)) || ((startdeg > 270) && (enddeg > 270))){
+							if((Math.tan(s[3]) < div) && (Math.tan(s[4]) > div)){
+								mouseon = true;
+							}
+						}
+					}
+					
+					// (2) if start > 90 and end < 270
+					if(this.mousey < 0){
+						if((startdeg > 90) && (enddeg < 270) && (enddeg >= 90)){
+							if((Math.tan(s[4]) < div) && (Math.tan(s[3]) > div)){
+								mouseon = true;
+							}
+						}
+					}
+					
+					// (3) if start < 90 and 90 < end < 270
+					if((startdeg < 90) && (enddeg < 270) && (enddeg >= 90)){
+						if(this.mousey < 0){
+							if(Math.tan(s[4]) > div) mouseon = true;	
+						} else {
+							if(Math.tan(s[3]) < div) mouseon = true;		
+						}
+					}
+					
+					// (4) if 90 < start < 270 and end > 270
+					if((startdeg >= 90) && (startdeg < 270) && (enddeg >= 270)){
+						if(this.mousey < 0){
+							if(Math.tan(s[3]) < div) mouseon = true;	
+						} else {
+							if(Math.tan(s[4]) > div) mouseon = true;	
+						}
+					}
+					
+					// (5) is 90 > start and end > 270
+					if((startdeg < 90) && (enddeg >= 270)){
+						if(this.mousex > 0){
+							if(Math.tan(s[3]) > div2) mouseon = true;	
+						} else {
+							if(this.mousey < 0){
+								if(Math.tan(s[4]) < div) mouseon = true;	
+							} else {
+								if(Math.tan(s[4]) > div) mouseon = true;
+							}
+						}
+					}
+					
+					// show tooltip
+					if(mouseon){
+						if(s[2] != null){
+							this.tip.set('html',s[2]).setStyles({
+								display:'block',
+								left: this.tipmousex + 10 + 'px',
+								top: this.tipmousey - 20 + 'px'
+							});
+						}
+					}
+											
 					cx.fillStyle = this.options.colors[i%this.options.colors.length];
 					cx.beginPath();
 					cx.moveTo(this.centerx, this.centery);
@@ -750,8 +822,10 @@ Chartr.Types.Pie = new Class({
 	*/
 	mouseHandler: function(e){
 		var pos = this.el.getCoordinates();
-		this.mousex = e.page.x - pos.left;
-		this.mousey = e.page.y - pos.top;
+		this.mousex = e.page.x - pos.left - this.centerx;
+		this.mousey = this.centery - (e.page.y - pos.top);
+		this.tipmousex = e.page.x - pos.left;
+		this.tipmousey = e.page.y - pos.top;
 		this.redraw();
 	},
 	
