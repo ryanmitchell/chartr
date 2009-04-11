@@ -422,7 +422,10 @@ Chartr.Types.Bar = new Class({
 		showYAxisMarkerValues: true,
 		xLabel: '', // html contents of label for x axis
 		yLabel: '', // html content of label for y axis
-		colors: ['#cc0000','#00cc00','#0000cc']
+		colors: ['#cc0000','#00cc00','#0000cc'],
+		hovercolor: '#000000', // color on mouseover
+		animate: true, // do we animate?
+		animateperiod: 600 // over what period?
 	},
 	
 	initialize: function(el,parent,options){
@@ -431,6 +434,7 @@ Chartr.Types.Bar = new Class({
 		this.setOptions(options);
 		this.mousex = this.mousey = 0;
 		this.data = {points:[]};
+		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
 		this.el.addEvent('mouseout', function() {
 			this.redraw();
@@ -448,7 +452,7 @@ Chartr.Types.Bar = new Class({
 	
 	plotData: function(){
 		
-		this.fireEvent('beforeAxesDrawn',this.parent);
+		if(!this.options.animate || this.animatepercent == 100) this.fireEvent('beforeAxesDrawn',this.parent);
 		
 	    var cx = this.el.getContext('2d');
 	    cx.strokeStyle = this.options.axisColor;
@@ -563,19 +567,22 @@ Chartr.Types.Bar = new Class({
 		cx.closePath();
 		cx.stroke();
 		
-		this.fireEvent('axesDrawn',this.parent);
+		if(this.animatepercent == 100) this.fireEvent('axesDrawn',this.parent);
 			
-		this.fireEvent('beforeDataPlotted',this.parent);
+		if(!this.options.animate || this.animatepercent == 100) this.fireEvent('beforeDataPlotted',this.parent);
 				
 	    var cx = this.el.getContext('2d');
-			
+					
 		var xcount = 0;
 		this.data.points.each(function(c){
 			if(($type(c)=='array') && (c.length > 1)){
 				
+				var mouseon = false;
+				
 				// is the mouse over me?
 				if((this.mousex >= (this.area.x + (xcount*this.xspacing))) && (this.mousex <= (this.area.x + (xcount+1)*this.xspacing))){
-					if((this.mousey >= (this.area.y + this.area.h - (c[1]*this.ypointspacing))) && (this.mousey <= (this.area.y + this.area.h))){	
+					if((this.mousey >= (this.area.y + this.area.h - (c[1]*this.ypointspacing))) && (this.mousey <= (this.area.y + this.area.h))){
+						mouseon = true;
 						if(c.length > 2) { 
 							this.tip.set('html',c[2]).setStyles({
 								display:'block',
@@ -588,17 +595,21 @@ Chartr.Types.Bar = new Class({
 				}
 								
 				cx.beginPath();
-				cx.fillStyle = this.options.colors[xcount%this.options.colors.length];
-				cx.rect(this.area.x + (xcount*this.xspacing),this.area.y + this.area.h - (c[1]*this.ypointspacing),this.xspacing,(c[1]*this.ypointspacing));	
+				cx.fillStyle = (mouseon) ? this.options.hovercolor : this.options.colors[xcount%this.options.colors.length];
+				cx.rect(this.area.x + (xcount*this.xspacing),this.area.y + this.area.h - (c[1]*this.ypointspacing*(this.animatepercent/100)),this.xspacing,(c[1]*this.ypointspacing*(this.animatepercent/100)));	
 				cx.fill();
 				
 				xcount++;
 								
 			}
 		},this);
-			
-		this.fireEvent('dataPlotted',this.parent);
-	
+				
+		if(this.animatepercent == 100) this.fireEvent('dataPlotted',this.parent);
+		
+		if(this.options.animate && (this.animatepercent < 100)){
+			this.animatepercent += 4;
+			this.redraw.delay(this.options.animateperiod/25,this);
+		}	
 	},
 	
 	/*
