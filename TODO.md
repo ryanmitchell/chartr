@@ -7,3 +7,4 @@ To do list
 * Seperate out into individual files for each chart type
 * Add support for legends
 * Add ability for bar chart to have spacing between bars
+* Pie chart should only display tips within the circle
