@@ -435,9 +435,12 @@ Chartr.Types.Bar = new Class({
 		this.mousex = this.mousey = 0;
 		this.data = {points:[]};
 		this.animatepercent = (this.options.animate) ? 0 : 100;
+		// tooltip
+		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
+		this.el.getParent().adopt(this.tip);
 		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
 		this.el.addEvent('mouseout', function() {
-			this.redraw();
+			this.redraw(false);
 		}.bind(this));
 	},
 	
@@ -468,10 +471,6 @@ Chartr.Types.Bar = new Class({
 				w:this.parent.area.w - parseInt(this.el.getStyle('padding-left')) - parseInt(this.el.getStyle('padding-right')) - 20,
 				h:this.parent.area.h - parseInt(this.el.getStyle('padding-top')) - parseInt(this.el.getStyle('padding-bottom')) - 20
 			};
-			
-			// tooltip
-			this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
-			this.el.getParent().adopt(this.tip);
 			
 			// show x label?
 			if(this.options.xLabel != ''){
@@ -635,6 +634,7 @@ Chartr.Types.Bar = new Class({
 		var pos = this.el.getCoordinates();
 		this.mousex = e.page.x - pos.left;
 		this.mousey = e.page.y - pos.top;
+		this.tip.setStyle('display','none');
 		this.redraw(false);
 	},
 	
