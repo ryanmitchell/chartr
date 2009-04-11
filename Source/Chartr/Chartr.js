@@ -107,6 +107,14 @@ Chartr = new Class({
 		} catch(e){
 			throw 'Chartr.call('+method+'): ' + e;		
 		}
+	},
+	
+	showTip: function(html){
+		this.tip.set('html',html);
+	},
+	
+	hideTip: function()[
+		this.tip.setStyle('display','none');					
 	}
 	
 });
