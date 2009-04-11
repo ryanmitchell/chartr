@@ -444,6 +444,7 @@ Chartr.Types.Bar = new Class({
 	*/
 	plot: function(data){
 		this.data = data;
+		if(this.options.animate) this.animatepercent = 0;
 		this.plotData(true);
 		
 	},
