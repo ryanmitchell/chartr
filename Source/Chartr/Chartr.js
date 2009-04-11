@@ -650,7 +650,7 @@ Chartr.Types.Bar = new Class({
 			this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
 			this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
 		} else {
-			this.el.getContext('2d').clearRect(this.area.x,this.area.y,this.area.w,this.area.h);
+			this.el.getContext('2d').clearRect(this.area.x+this.options.strokewidth,this.area.y+this.options.strokewidth,this.area.w,this.area.h);
 		}
 		this.plotData(redrawAxis);
 	}
