@@ -146,6 +146,7 @@ Chartr = new Class({
 		var pos = this.el.getCoordinates();
 		this.mouse.x = e.page.x - pos.left;
 		this.mouse.y = e.page.y - pos.top;
+		this.hideTip();
 		this.fireEvent('mousemove',this);
 	},
 	
@@ -189,7 +190,9 @@ Chartr.Types.Line = new Class({
 		this.setOptions(options);
 		this.drawAxes();
 		this.plotted = [];
-		this.parent.addEvent('mousemove',function(){ this.parent.hideTip(); this.redraw(); }.bind(this));
+		this.parent.addEvent('mousemove',function(){ 
+			this.redraw(); 
+		}.bind(this));
 	},
 	
 	/*
@@ -459,7 +462,6 @@ Chartr.Types.Bar = new Class({
 		this.setOptions(options);
 		this.data = {points:[]};
 		this.parent.addEvent('mousemove', function() {
-			this.parent.hideTip();
 			this.redraw(false);
 		}.bind(this));
 	},
@@ -676,7 +678,6 @@ Chartr.Types.Pie = new Class({
 		this.parent.addEvent('mousemove', function(){
 			this.mousex = this.parent.mouse.x - this.centerx;
 			this.mousey = this.centery - this.parent.mouse.y;	
-			this.parent.hideTip();
 			this.redraw();
 		}.bind(this));
 	},
