@@ -432,7 +432,6 @@ Chartr.Types.Bar = new Class({
 		this.setOptions(options);
 		this.mousex = this.mousey = 0;
 		this.data = {points:[]};
-		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
 		this.el.addEvent('mouseout', function() {
 			this.redraw(false);
@@ -444,7 +443,7 @@ Chartr.Types.Bar = new Class({
 	*/
 	plot: function(data){
 		this.data = data;
-		if(this.options.animate) this.animatepercent = 0;
+		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.plotData(true);
 		
 	},
