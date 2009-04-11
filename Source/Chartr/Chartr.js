@@ -50,6 +50,8 @@ Chartr = new Class({
 				this.container.wraps(this.el);
 				if(this.prepareCanvas()){
 					this.el.store('Chartr',this);
+					this.tip = new Element('div').addClass(this.options.cssclass).addClass(this.options.cssclass+'tooltip').setStyle('display','none');
+					this.container.adopt(this.tip);
 					this.chart = new Chartr.Types[this.options.type](this.el,this,options);
 				}
 			}
@@ -163,10 +165,6 @@ Chartr.Types.Line = new Class({
 			w:this.parent.area.w - parseInt(this.el.getStyle('padding-left')) - parseInt(this.el.getStyle('padding-right')) - 20,
 			h:this.parent.area.h - parseInt(this.el.getStyle('padding-top')) - parseInt(this.el.getStyle('padding-bottom')) - 20
 		};
-		
-		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
-		this.el.getParent().adopt(this.tip);
 		
 		// show x label?
 		if(this.options.xLabel != ''){
@@ -351,7 +349,7 @@ Chartr.Types.Line = new Class({
 				if((this.mousex >= pointx) && (this.mousex <= pointx + scheme.pointSize)){
 					if((this.mousey >= pointy) && (this.mousey <= pointy + scheme.pointSize)){	
 						if(c.length > 2) { 
-							this.tip.set('html',c[2]).setStyles({
+							this.parent.tip.set('html',c[2]).setStyles({
 								display:'block',
 								left: pointx + 10 + 'px',
 								top: pointy - 20 + 'px'
@@ -435,9 +433,6 @@ Chartr.Types.Bar = new Class({
 		this.mousex = this.mousey = 0;
 		this.data = {points:[]};
 		this.animatepercent = (this.options.animate) ? 0 : 100;
-		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
-		this.el.getParent().adopt(this.tip);
 		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
 		this.el.addEvent('mouseout', function() {
 			this.redraw(false);
@@ -588,7 +583,7 @@ Chartr.Types.Bar = new Class({
 					if((this.mousey >= (this.area.y + this.area.h - (c[1]*this.ypointspacing))) && (this.mousey <= (this.area.y + this.area.h))){
 						mouseon = true;
 						if(c.length > 2) { 
-							this.tip.set('html',c[2]).setStyles({
+							this.parent.tip.set('html',c[2]).setStyles({
 								display:'block',
 								left: this.mousex + 10 + 'px',
 								top: this.mousey - 20 + 'px'
@@ -634,7 +629,7 @@ Chartr.Types.Bar = new Class({
 		var pos = this.el.getCoordinates();
 		this.mousex = e.page.x - pos.left;
 		this.mousey = e.page.y - pos.top;
-		this.tip.setStyle('display','none');
+		this.parent.tip.setStyle('display','none');
 		this.redraw(false);
 	},
 	
@@ -714,10 +709,6 @@ Chartr.Types.Pie = new Class({
 			w:this.parent.area.w - parseInt(this.el.getStyle('padding-left')) - parseInt(this.el.getStyle('padding-right')) - 20,
 			h:this.parent.area.h - parseInt(this.el.getStyle('padding-top')) - parseInt(this.el.getStyle('padding-bottom')) - 20
 		};
-		
-		// tooltip
-		this.tip = new Element('div').addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'tooltip').setStyle('display','none');
-		this.el.getParent().adopt(this.tip);
 		
 		// work out where to put our pie
 		this.centerx = this.area.x + (this.area.w * 0.5);
@@ -805,7 +796,7 @@ Chartr.Types.Pie = new Class({
 					// show tooltip
 					if(mouseon){
 						if(s[2] != null){
-							this.tip.set('html',s[2]).setStyles({
+							this.parent.tip.set('html',s[2]).setStyles({
 								display:'block',
 								left: this.tipmousex + 10 + 'px',
 								top: this.tipmousey - 20 + 'px'
