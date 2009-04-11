@@ -52,6 +52,10 @@ Chartr = new Class({
 					this.el.store('Chartr',this);
 					this.tip = new Element('div').addClass(this.options.cssclass).addClass(this.options.cssclass+'tooltip').setStyle('display','none');
 					this.container.adopt(this.tip);
+					this.mouse = {x:0,y:0};
+					this.el.addEvent('mousemove', this.mouseMove.bind(this));
+					this.el.addEvent('mouseout', this.mouseOut.bind(this));
+					this.el.addEvent('mouseon', this.mouseOn.bind(this));
 					this.chart = new Chartr.Types[this.options.type](this.el,this,options);
 				}
 			}
@@ -111,10 +115,47 @@ Chartr = new Class({
 	
 	showTip: function(html){
 		this.tip.set('html',html);
+		this.tip.setStyles({
+			display:'block',
+			'z-index':1000,
+			left: this.mouse.x + 10 + 'px',
+			top: this.mouse.y - 20 + 'px'
+		});
+		this.fireEvent('showTip',this);
 	},
 	
-	hideTip: function()[
-		this.tip.setStyle('display','none');					
+	hideTip: function(){
+		this.tip.setStyle('display','none');	
+		this.fireEvent('hideTip',this);
+	},
+	
+	// method to cleanup divs and spans
+	cleanup: function(){
+		this.container.getElements('div').each(function(el){
+			if(el != this.tip) el.dispose();												
+		},this);
+		this.container.getElements('span').dispose();
+	},
+	
+	/*
+	*	mousemove
+	*
+	*	tracks where the mouse is and calls redraw
+	*/
+	mouseMove: function(e){
+		var pos = this.el.getCoordinates();
+		this.mouse.x = e.page.x - pos.left;
+		this.mouse.y = e.page.y - pos.top;
+		this.fireEvent('mousemove',this);
+	},
+	
+	mouseOn: function(e){
+		this.fireEvent('mouseon',this);	
+	},
+	
+	mouseOut: function(e){
+		this.hideTip();
+		this.fireEvent('mouseout',this);	
 	}
 	
 });
@@ -148,11 +189,7 @@ Chartr.Types.Line = new Class({
 		this.setOptions(options);
 		this.drawAxes();
 		this.plotted = [];
-		this.mousex = this.mousey = 0;
-		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
-		this.el.addEvent('mouseout', function() {
-			this.redraw();
-		}.bind(this));
+		this.parent.addEvent('mousemove',this.redraw.bind(this));
 	},
 	
 	/*
@@ -354,15 +391,10 @@ Chartr.Types.Line = new Class({
 				var pointy = this.area.y - this.origin[1] + this.area.h - (scheme.pointSize / 2) - (c[1] * this.ypointspacing);
 				
 				// is the mouse over me?
-				if((this.mousex >= pointx) && (this.mousex <= pointx + scheme.pointSize)){
-					if((this.mousey >= pointy) && (this.mousey <= pointy + scheme.pointSize)){	
+				if((this.parent.mouse.x >= pointx) && (this.parent.mouse.x <= pointx + scheme.pointSize)){
+					if((this.parent.mouse.y >= pointy) && (this.parent.mouse.y <= pointy + scheme.pointSize)){
 						if(c.length > 2) { 
-							this.parent.tip.set('html',c[2]).setStyles({
-								display:'block',
-								left: pointx + 10 + 'px',
-								top: pointy - 20 + 'px'
-							});
-							this.fireEvent('showTip',this.parent);
+							this.parent.showTip(c[2]);
 						}
 					}
 				}
@@ -393,24 +425,11 @@ Chartr.Types.Line = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
-		this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+		this.parent.cleanup();
 		this.drawAxes();
 		this.plotted.each(function(d){ this.plotData(d.data,d.scheme); },this);
-	},
-	
-	/*
-	*	mousehandler
-	*
-	*	tracks where the mouse is and calls redraw
-	*/
-	mouseHandler: function(e){
-		var pos = this.el.getCoordinates();
-		this.mousex = e.page.x - pos.left;
-		this.mousey = e.page.y - pos.top;
-		this.redraw();
 	}
-									
+										
 });
 
 Chartr.Types.Bar = new Class({
@@ -438,10 +457,9 @@ Chartr.Types.Bar = new Class({
 		this.el = el;
 		this.parent = parent;
 		this.setOptions(options);
-		this.mousex = this.mousey = 0;
 		this.data = {points:[]};
-		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
-		this.el.addEvent('mouseout', function() {
+		this.parent.addEvent('mousemove', function() {
+			this.parent.hideTip();
 			this.redraw(false);
 		}.bind(this));
 	},
@@ -585,18 +603,13 @@ Chartr.Types.Bar = new Class({
 			if(($type(c)=='array') && (c.length > 1)){
 				
 				var mouseon = false;
-				
+								
 				// is the mouse over me?
-				if((this.mousex >= (this.area.x + (xcount*this.xspacing))) && (this.mousex <= (this.area.x + (xcount+1)*this.xspacing))){
-					if((this.mousey >= (this.area.y + this.area.h - (c[1]*this.ypointspacing))) && (this.mousey <= (this.area.y + this.area.h))){
+				if((this.parent.mouse.x >= (this.area.x + (xcount*this.xspacing))) && (this.parent.mouse.x <= (this.area.x + (xcount+1)*this.xspacing))){
+					if((this.parent.mouse.y >= (this.area.y + this.area.h - (c[1]*this.ypointspacing))) && (this.parent.mouse.y <= (this.area.y + this.area.h))){
 						mouseon = true;
 						if(c.length > 2) { 
-							this.parent.tip.set('html',c[2]).setStyles({
-								display:'block',
-								left: this.mousex + 10 + 'px',
-								top: this.mousey - 20 + 'px'
-							});
-							this.fireEvent('showTip',this.parent);
+							this.parent.showTip(c[2]);
 						}
 					}
 				}
@@ -627,20 +640,7 @@ Chartr.Types.Bar = new Class({
 		this.data = {points:[]};
 		this.redraw();
 	},
-	
-	/*
-	*	mousehandler
-	*
-	*	tracks where the mouse is and calls redraw
-	*/
-	mouseHandler: function(e){
-		var pos = this.el.getCoordinates();
-		this.mousex = e.page.x - pos.left;
-		this.mousey = e.page.y - pos.top;
-		this.parent.tip.setStyle('display','none');
-		this.redraw(false);
-	},
-	
+		
 	/*
 	*	redraw the canvas
 	*
@@ -650,8 +650,7 @@ Chartr.Types.Bar = new Class({
 		if(redrawAxis==null) redrawAxis = true;
 		if(redrawAxis){
 			this.el.getContext('2d').clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-			this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
-			this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+			this.parent.cleanup();
 		} else {
 			this.el.getContext('2d').clearRect(this.area.x+this.options.strokewidth,this.area.y+this.options.strokewidth,this.area.w,this.area.h);
 		}
@@ -674,8 +673,10 @@ Chartr.Types.Pie = new Class({
 		this.setOptions(options);
 		this.mousex = this.mousey = 0;
 		this.data = {slices:[]};
-		this.el.addEvent('mousemove', this.mouseHandler.bind(this));
-		this.el.addEvent('mouseout', function() {
+		this.parent.addEvent('mousemove', function(){
+			this.mousex = this.parent.mouse.x - this.centerx;
+			this.mousey = this.centery - this.parent.mouse.y;	
+			this.parent.hideTip();
 			this.redraw();
 		}.bind(this));
 	},
@@ -804,12 +805,7 @@ Chartr.Types.Pie = new Class({
 					// show tooltip
 					if(mouseon){
 						if(s[2] != null){
-							this.parent.tip.set('html',s[2]).setStyles({
-								display:'block',
-								left: this.tipmousex + 10 + 'px',
-								top: this.tipmousey - 20 + 'px'
-							});
-							this.fireEvent('showTip',this.parent);
+							this.parent.showTip(s[2]);
 						}
 					}
 											
@@ -844,20 +840,6 @@ Chartr.Types.Pie = new Class({
 	},
 	
 	/*
-	*	mousehandler
-	*
-	*	tracks where the mouse is and calls redraw
-	*/
-	mouseHandler: function(e){
-		var pos = this.el.getCoordinates();
-		this.mousex = e.page.x - pos.left - this.centerx;
-		this.mousey = this.centery - (e.page.y - pos.top);
-		this.tipmousex = e.page.x - pos.left;
-		this.tipmousey = e.page.y - pos.top;
-		this.redraw();
-	},
-	
-	/*
 	*	redraw the canvas
 	*
 	*	called on mouse movement, so we can simulate mouse over behaviour
@@ -865,8 +847,7 @@ Chartr.Types.Pie = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.el.getParent().getElements('div.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
-		this.el.getParent().getElements('span.'+this.parent.options.cssclass).each(function(e){e.dispose();},this);
+		this.parent.cleanup();
 		this.plotData();
 	}
 							 
