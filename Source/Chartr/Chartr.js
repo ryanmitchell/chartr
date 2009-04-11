@@ -189,7 +189,7 @@ Chartr.Types.Line = new Class({
 		this.setOptions(options);
 		this.drawAxes();
 		this.plotted = [];
-		this.parent.addEvent('mousemove',this.redraw.bind(this));
+		this.parent.addEvent('mousemove',function(){ this.parent.hideTip(); this.redraw(); }.bind(this));
 	},
 	
 	/*
