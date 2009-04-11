@@ -635,7 +635,7 @@ Chartr.Types.Bar = new Class({
 		var pos = this.el.getCoordinates();
 		this.mousex = e.page.x - pos.left;
 		this.mousey = e.page.y - pos.top;
-		this.redraw();
+		this.redraw(false);
 	},
 	
 	/*
