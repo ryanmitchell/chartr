@@ -666,7 +666,10 @@ Chartr.Types.Pie = new Class({
 	Implements: [Options,Events],
 	
 	options: {
-		colors: ['#cc0000','#00cc00','#0000cc','#ffcc00']
+		colors: ['#cc0000','#00cc00','#0000cc','#ffcc00'],
+		hovercolor: '#000000', // color on mouseover
+		animate: true, // do we animate?
+		animateperiod: 600 // over what period?
 	},
 	
 	initialize: function(el,parent,options){
@@ -703,6 +706,7 @@ Chartr.Types.Pie = new Class({
 			}
 		},this);
 		this.data = data;
+		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.plotData();
 	},
 	
@@ -809,13 +813,15 @@ Chartr.Types.Pie = new Class({
 							this.parent.showTip(s[2]);
 						}
 					}
+					
+					var diff = ((s[4] - s[3]) * (100-this.animatepercent)) / 100;
 											
-					cx.fillStyle = this.options.colors[i%this.options.colors.length];
+					cx.fillStyle = (mouseon) ? this.options.hovercolor : this.options.colors[i%this.options.colors.length];
 					cx.beginPath();
 					cx.moveTo(this.centerx, this.centery);
 					cx.arc(this.centerx, this.centery, this.radius, 
 							s[3] - Math.PI/2,
-							s[4] - Math.PI/2,
+							s[4] - diff - Math.PI/2,
 							false);
 					cx.lineTo(this.centerx, this.centery);
 					cx.closePath();
@@ -826,6 +832,11 @@ Chartr.Types.Pie = new Class({
 			}
 			
 		},this);
+		
+		if(this.options.animate && (this.animatepercent < 100)){
+			this.animatepercent += 4;
+			this.redraw.delay(this.options.animateperiod/25,this,[false]);
+		}	
 			
 		this.fireEvent('dataPlotted',this.parent);
 	
