@@ -105,6 +105,12 @@ Chartr = new Class({
 		return true;
 	},
 	
+	/*
+	* call a sub-class method
+	* 
+	* @param {string} method	name of method to call
+	* @param {array} args		arguments to pass to method
+	*/
 	call: function(method,args){
 		try{
 			this.chart[method].run(args,this.chart);
@@ -113,6 +119,12 @@ Chartr = new Class({
 		}
 	},
 	
+	/*
+	* show the tooltip
+	* 
+	* @param {string} html	HTML to insert into tooltip
+	* @return {void)
+	*/
 	showTip: function(html){
 		this.tip.set('html',html);
 		this.tip.setStyles({
@@ -124,12 +136,21 @@ Chartr = new Class({
 		this.fireEvent('showTip',this);
 	},
 	
+	/*
+	* hide the tooltip
+	* 
+	* @return {void)
+	*/
 	hideTip: function(){
 		this.tip.setStyle('display','none');	
 		this.fireEvent('hideTip',this);
 	},
 	
-	// method to cleanup divs and spans
+	/*
+	* cleanup divs and spans
+	* 
+	* @return {void)
+	*/
 	cleanup: function(){
 		this.container.getElements('div').each(function(el){
 			if(el != this.tip) el.dispose();												
@@ -138,9 +159,9 @@ Chartr = new Class({
 	},
 	
 	/*
-	*	mousemove
-	*
-	*	tracks where the mouse is and calls redraw
+	* tracks where the mouse is
+	* 
+	* @return {void)
 	*/
 	mouseMove: function(e){
 		var pos = this.el.getCoordinates();
@@ -150,10 +171,20 @@ Chartr = new Class({
 		this.fireEvent('mousemove',this);
 	},
 	
+	/*
+	* called when the mouse is over the canvas
+	* 
+	* @return {void)
+	*/
 	mouseOn: function(e){
 		this.fireEvent('mouseon',this);	
 	},
 	
+	/*
+	* called when the mouse moves off the canvas
+	* 
+	* @return {void)
+	*/
 	mouseOut: function(e){
 		this.hideTip();
 		this.fireEvent('mouseout',this);	
