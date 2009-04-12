@@ -181,7 +181,9 @@ Chartr.Types.Line = new Class({
 		showYAxisMarkerValues: true,
 		xLabel: '', // html contents of label for x axis
 		yLabel: '', // html content of label for y axis
-		joinPoints: true
+		joinPoints: true,
+		animate: true,
+		animateperiod: 600
 	},
 	
 	initialize: function(el,parent,options){
@@ -356,6 +358,7 @@ Chartr.Types.Line = new Class({
 			scheme: scheme,
 			ref: ref
 		});
+		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.plotData(data,scheme);
 	},
 	
@@ -367,7 +370,7 @@ Chartr.Types.Line = new Class({
 	*/
 	plotData: function(data,scheme){
 	
-		this.fireEvent('beforeDataPlotted',this.parent);
+		if(!this.options.animate || (this.animatepercent == 0)) this.fireEvent('beforeDataPlotted',this.parent);
 				
 	    var cx = this.el.getContext('2d');
 		cx.fillStyle = scheme.pointColor;
@@ -375,48 +378,61 @@ Chartr.Types.Line = new Class({
 		cx.lineWidth = scheme.lineSize;
 				
 		var lastPoint = [];
+		var counter = 0;
+		var pointsToShow = Math.floor(data.points.length * (this.animatepercent/100));
 		data.points.each(function(c){
 			if(($type(c)=='array') && (c.length > 1)){
-								
-				// are we drawing a line between points?
-				if(this.options.joinPoints){
-					if(lastPoint.length>1){
-						cx.beginPath();
-						cx.moveTo(this.area.x + this.origin[0] + (lastPoint[0] * this.xpointspacing) + (scheme.pointSize/2),this.area.y - this.origin[1] + this.area.h  - (lastPoint[1] * this.ypointspacing));
-						cx.lineTo(this.area.x + this.origin[0] + (c[0] * this.xpointspacing) - (scheme.pointSize/2),this.area.y - this.origin[1] + this.area.h - (c[1] * this.ypointspacing));
-						cx.stroke();
-					}
-					lastPoint = c;			
-				}
-								
-				// points on canvas
-				var pointx = this.area.x + this.origin[0] + (c[0] * this.xpointspacing) - (scheme.pointSize / 2);
-				var pointy = this.area.y - this.origin[1] + this.area.h - (scheme.pointSize / 2) - (c[1] * this.ypointspacing);
 				
-				// is the mouse over me?
-				if((this.parent.mouse.x >= pointx) && (this.parent.mouse.x <= pointx + scheme.pointSize)){
-					if((this.parent.mouse.y >= pointy) && (this.parent.mouse.y <= pointy + scheme.pointSize)){
-						if(c.length > 2) { 
-							this.parent.showTip(c[2]);
+				counter++;
+				
+				if(counter <= pointsToShow){
+								
+					// are we drawing a line between points?
+					if(this.options.joinPoints){
+						if(lastPoint.length>1){
+							cx.beginPath();
+							cx.moveTo(this.area.x + this.origin[0] + (lastPoint[0] * this.xpointspacing) + (scheme.pointSize/2),this.area.y - this.origin[1] + this.area.h  - (lastPoint[1] * this.ypointspacing));
+							cx.lineTo(this.area.x + this.origin[0] + (c[0] * this.xpointspacing) - (scheme.pointSize/2),this.area.y - this.origin[1] + this.area.h - (c[1] * this.ypointspacing));
+							cx.stroke();
+						}
+						lastPoint = c;			
+					}
+									
+					// points on canvas
+					var pointx = this.area.x + this.origin[0] + (c[0] * this.xpointspacing) - (scheme.pointSize / 2);
+					var pointy = this.area.y - this.origin[1] + this.area.h - (scheme.pointSize / 2) - (c[1] * this.ypointspacing);
+					
+					// is the mouse over me?
+					if((this.parent.mouse.x >= pointx) && (this.parent.mouse.x <= pointx + scheme.pointSize)){
+						if((this.parent.mouse.y >= pointy) && (this.parent.mouse.y <= pointy + scheme.pointSize)){
+							if(c.length > 2) { 
+								this.parent.showTip(c[2]);
+							}
 						}
 					}
-				}
+					
+					cx.beginPath();
+					
+					// what do we draw?
+					if(scheme.pointType == 'circle'){
+						cx.arc(pointx,pointy,scheme.pointSize,0,Math.PI+(Math.PI*3)/2,false);
+					} else {
+						cx.rect(pointx,pointy,scheme.pointSize,scheme.pointSize);	
+					}
+	
+					cx.fill();
 				
-				cx.beginPath();
-				
-				// what do we draw?
-				if(scheme.pointType == 'circle'){
-					cx.arc(pointx,pointy,scheme.pointSize,0,Math.PI+(Math.PI*3)/2,false);
-				} else {
-					cx.rect(pointx,pointy,scheme.pointSize,scheme.pointSize);	
 				}
-
-				cx.fill();
 								
 			}
 		},this);
 			
-		this.fireEvent('dataPlotted',this.parent);
+		if(this.animatepercent == 100) this.fireEvent('dataPlotted',this.parent);
+		
+		if(this.options.animate && (this.animatepercent < 100)){
+			this.animatepercent += 4;
+			this.redraw.delay(this.options.animateperiod/25,this,[false]);
+		}	
 	
 	},
 	
