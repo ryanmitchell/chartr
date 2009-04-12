@@ -751,71 +751,76 @@ Chartr.Types.Pie = new Class({
 					var startdeg = (s[3] * 180) / Math.PI;
 					var enddeg = (s[4] * 180) / Math.PI;
 					
-					// (1) if start,end < 90 or start,end > 270
-					if((this.mousex > 0) && (this.mousey > 0)){
-						if(((startdeg < 90) && (enddeg < 90)) || ((startdeg > 270) && (enddeg > 270))){
-							if((Math.tan(s[3]) < div) && (Math.tan(s[4]) > div)){
-								mouseon = true;
+					// needs to be inside the circle!
+					if(Math.sqrt((this.mousex*this.mousex) + (this.mousey*this.mousey)) <= (this.radius)){
+					
+						// (1) if start,end < 90 or start,end > 270
+						if((this.mousex > 0) && (this.mousey > 0)){
+							if(((startdeg < 90) && (enddeg < 90)) || ((startdeg > 270) && (enddeg > 270))){
+								if((Math.tan(s[3]) < div) && (Math.tan(s[4]) > div)){
+									mouseon = true;
+								}
 							}
 						}
-					}
-					
-					// (2) if start > 90 and end < 270
-					if(this.mousey < 0){
-						if((startdeg > 90) && (enddeg < 270) && (enddeg >= 90)){
-							if((Math.tan(s[4]) < div) && (Math.tan(s[3]) > div)){
-								mouseon = true;
+						
+						// (2) if start > 90 and end < 270
+						if(this.mousey < 0){
+							if((startdeg > 90) && (enddeg < 270) && (enddeg >= 90)){
+								if((Math.tan(s[4]) < div) && (Math.tan(s[3]) > div)){
+									mouseon = true;
+								}
 							}
 						}
-					}
-					
-					// (3) if start < 90 and 90 < end < 270
-					if((startdeg < 90) && (enddeg < 270) && (enddeg >= 90)){
-						if(this.mousey < 0){
-							if(Math.tan(s[4]) > div) mouseon = true;	
-						} else {
-							if(Math.tan(s[3]) < div) mouseon = true;		
+						
+						// (3) if start < 90 and 90 < end < 270
+						if((startdeg < 90) && (enddeg < 270) && (enddeg >= 90)){
+							if(this.mousey < 0){
+								if(Math.tan(s[4]) > div) mouseon = true;	
+							} else {
+								if(Math.tan(s[3]) < div) mouseon = true;		
+							}
 						}
-					}
-					
-					// (4) if 90 < start < 270 and end > 270
-					if((startdeg >= 90) && (startdeg < 270) && (enddeg >= 270)){
-						if(this.mousey < 0){
-							if(Math.tan(s[3]) < div) mouseon = true;	
-						} else {
-							if(Math.tan(s[4]) > div) mouseon = true;	
-						}
-					}
-					
-					// (5) if 90 > start and end > 270
-					if((startdeg < 90) && (enddeg >= 270)){
-						if(this.mousex > 0){
-							if(this.mousey > 0){
+						
+						// (4) if 90 < start < 270 and end > 270
+						if((startdeg >= 90) && (startdeg < 270) && (enddeg >= 270)){
+							if(this.mousey < 0){
 								if(Math.tan(s[3]) < div) mouseon = true;	
 							} else {
-								mouseon = true;
+								if(Math.tan(s[4]) > div) mouseon = true;	
 							}
-						} else {
-							if(this.mousey < 0){
-								mouseon = true;	
+						}
+						
+						// (5) if 90 > start and end > 270
+						if((startdeg < 90) && (enddeg >= 270)){
+							if(this.mousex > 0){
+								if(this.mousey > 0){
+									if(Math.tan(s[3]) < div) mouseon = true;	
+								} else {
+									mouseon = true;
+								}
 							} else {
-								if(Math.tan(s[4]) > div) mouseon = true;
+								if(this.mousey < 0){
+									mouseon = true;	
+								} else {
+									if(Math.tan(s[4]) > div) mouseon = true;
+								}
 							}
 						}
-					}
-					
-					// (6) if start > 270 and end > 270
-					if((startdeg >= 270) && (enddeg >= 270)){
-						if((this.mousex < 0) && (this.mousey > 0)){
-							if(Math.tan(s[3]) < div) mouseon = true;
+						
+						// (6) if start > 270 and end > 270
+						if((startdeg >= 270) && (enddeg >= 270)){
+							if((this.mousex < 0) && (this.mousey > 0)){
+								if(Math.tan(s[3]) < div) mouseon = true;
+							}
 						}
-					}
-					
-					// show tooltip
-					if(mouseon){
-						if(s[2] != null){
-							this.parent.showTip(s[2]);
+						
+						// show tooltip
+						if(mouseon){
+							if(s[2] != null){
+								this.parent.showTip(s[2]);
+							}
 						}
+						
 					}
 					
 					var diff = ((s[4] - s[3]) * (100-this.animatepercent)) / 100;
@@ -830,7 +835,7 @@ Chartr.Types.Pie = new Class({
 					cx.lineTo(this.centerx, this.centery);
 					cx.closePath();
 					cx.fill();
-
+						
 				}
 			
 			}
