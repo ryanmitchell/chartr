@@ -683,6 +683,10 @@ Chartr.Types.Pie = new Class({
 			this.mousey = this.centery - this.parent.mouse.y;	
 			this.redraw();
 		}.bind(this));
+		this.parent.addEvent('mouseout',function(){
+			this.redraw();	
+			this.parent.hideTip();
+		}.bind(this));
 	},
 	
 	/*
