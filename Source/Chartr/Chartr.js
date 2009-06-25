@@ -53,9 +53,11 @@ Chartr = new Class({
 					this.tip = new Element('div').addClass(this.options.cssclass).addClass(this.options.cssclass+'tooltip').setStyle('display','none');
 					this.container.adopt(this.tip);
 					this.mouse = {x:0,y:0};
-					this.el.addEvent('mousemove', this.mouseMove.bind(this));
-					this.el.addEvent('mouseout', this.mouseOut.bind(this));
-					this.el.addEvent('mouseon', this.mouseOn.bind(this));
+					if(!Browser.Engine.trident){
+						this.el.addEvent('mousemove', this.mouseMove.bind(this));
+						this.el.addEvent('mouseout', this.mouseOut.bind(this));
+						this.el.addEvent('mouseon', this.mouseOn.bind(this));
+					}
 					this.chart = new Chartr.Types[this.options.type](this.el,this,options);
 				}
 			}
