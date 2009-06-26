@@ -35,7 +35,7 @@ Chartr.Types.Line = new Class({
 		joinPoints: true,
 		animate: true,
 		animateperiod: 600,
-		redrawAxes: false // redraw the axes - allows you to change them dynamically
+		redrawAxes: true // redraw the axes - allows you to change them dynamically
 	},
 	
 	initialize: function(el,parent,options){
