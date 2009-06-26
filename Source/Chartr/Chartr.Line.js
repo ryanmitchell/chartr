@@ -222,7 +222,7 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	hideall: function(){
-		this.plottedbackup = this.plotted;
+		if(this.plottedbackup == []) this.plottedbackup = this.plotted;
 		this.plotted = [];
 		this.redraw();
 	},
@@ -233,7 +233,7 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	showonly: function(ar){
-		this.plottedbackup = this.plotted;
+		if(this.plottedbackup == []) this.plottedbackup = this.plotted;
 		this.plotted = [];
 		this.plottedbackup.each(function(r){ 
 			if(ar.contains(r.ref)){
