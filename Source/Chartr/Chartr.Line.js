@@ -44,6 +44,7 @@ Chartr.Types.Line = new Class({
 		this.setOptions(options);
 		this.drawAxes();
 		this.plotted = [];
+		this.plottedbackup = [];
 		this.parent.addEvent('mousemove',function(){ 
 			this.redraw(); 
 		}.bind(this));
@@ -202,7 +203,45 @@ Chartr.Types.Line = new Class({
 		this.plotted = [];
 		this.redraw();
 	},
-
+	
+	/*
+	*	showall
+	*	show all plotted data
+	*
+	*/
+	showall: function(){
+		this.plotted = this.plottedbackup;
+		this.plottedbackup = [];
+		this.redraw();
+	},
+	
+	
+	/*
+	*	hideall
+	*	hide all plotted data, but keep the data for later user
+	*
+	*/
+	hideall: function(){
+		this.plottedbackup = this.plotted;
+		this.plotted = [];
+		this.redraw();
+	},
+	
+	/*
+	*	showonly
+	*	show only the data from the references in the passed array
+	*
+	*/
+	showonly: function(ar){
+		this.plottedbackup = this.plotted;
+		this.plotted = [];
+		this.plottedbackup.each(function(r){ 
+			if(ar.contains(r.ref)){
+				this.plotted.push(r);	
+			}					   
+		},this);		
+		this.redraw();
+	},
 	
 	/*
 	*	plot the data
