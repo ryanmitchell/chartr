@@ -191,6 +191,11 @@ Chartr.Types.Line = new Class({
 				this.plotted.erase(r);	
 			}					   
 		},this);
+		this.plottedbackup.each(function(r){ 
+			if(r.ref == ref){
+				this.plotted.erase(r);	
+			}					   
+		},this);
 		this.redraw();
 	},
 	
@@ -201,6 +206,7 @@ Chartr.Types.Line = new Class({
 	*/
 	unplotall: function(){
 		this.plotted = [];
+		this.plottedbackup = [];
 		this.redraw();
 	},
 	
@@ -265,6 +271,13 @@ Chartr.Types.Line = new Class({
 			scheme: scheme,
 			ref: ref
 		});
+		if(this.plottedbackup != []){
+			this.plottedbackup.push({
+				data: data,
+				scheme: scheme,
+				ref: ref
+			});
+		}
 		this.animatepercent = (this.options.animate) ? 0 : 100;
 		this.plotData(data,scheme);
 	},
