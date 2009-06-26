@@ -228,7 +228,7 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	hideall: function(){
-		if(this.plottedbackup == []) this.plottedbackup = $A(this.plotted);
+		if(this.plottedbackup.length == 0) this.plottedbackup = $A(this.plotted);
 		this.plotted = [];
 		this.redraw()
 	},
@@ -239,7 +239,7 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	showonly: function(ar){
-		if(this.plottedbackup == []) this.plottedbackup = $A(this.plotted);
+		if(this.plottedbackup.length == 0) this.plottedbackup = $A(this.plotted);
 		this.plotted = [];
 		if($type(ar) != 'array') ar = [];
 		this.plottedbackup.each(function(r){ 
