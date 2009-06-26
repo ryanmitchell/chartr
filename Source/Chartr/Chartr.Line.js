@@ -34,7 +34,8 @@ Chartr.Types.Line = new Class({
 		yLabel: '', // html content of label for y axis
 		joinPoints: true,
 		animate: true,
-		animateperiod: 600
+		animateperiod: 600,
+		redrawAxes: false // redraw the axes - allows you to change them dynamically
 	},
 	
 	initialize: function(el,parent,options){
@@ -58,6 +59,9 @@ Chartr.Types.Line = new Class({
 	    var cx = this.el.getContext('2d');
 	    cx.strokeStyle = this.options.axisColor;
 	    cx.lineWidth = this.options.axisWidth;
+	    
+	    var drawLabels = (this.parent.container.getElements('span').length > 0) ? false : true;
+	    drawLabels = drawLabels || this.options.redrawAxes;
 				
 		// work out how much space we have
 		this.area = {
@@ -66,7 +70,7 @@ Chartr.Types.Line = new Class({
 			w:this.parent.area.w - parseInt(this.el.getStyle('padding-left')) - parseInt(this.el.getStyle('padding-right')) - 20,
 			h:this.parent.area.h - parseInt(this.el.getStyle('padding-top')) - parseInt(this.el.getStyle('padding-bottom')) - 20
 		};
-		
+				
 		// show x label?
 		if(this.options.xLabel != ''){
 			var d = new Element('div',{html:this.options.xLabel}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'label-x').setStyle('display','none');
@@ -75,9 +79,11 @@ Chartr.Types.Line = new Class({
 				position:'absolute',
 				right:this.area.x + 'px',
 				top:this.area.h - d.getSize().y + 'px',
-				display:'block'
+				display:'block',
+				'z-index':'1000'
 			});
 			this.area.h = this.area.h - d.getSize().y - 10;
+			if(!drawLabels) d.dispose();
 		}
 		
 		// show y label?
@@ -88,12 +94,14 @@ Chartr.Types.Line = new Class({
 				position:'absolute',
 				left: this.area.x + 'px',
 				top: this.area.y + 'px',
-				display:'block'
+				display:'block',
+				'z-index':'1000'
 			});
 			this.area.h = this.area.h - d.getSize().y - 15;
 			this.area.y = this.area.y + d.getSize().y + 15;
+			if(!drawLabels) d.dispose();
 		}
-		
+				
 		if(this.options.showXAxisMarkerValues || this.options.showYAxisMarkerValues){
 			this.area.x += 20;
 			this.area.w -= 20;
@@ -122,7 +130,7 @@ Chartr.Types.Line = new Class({
 			cx.lineTo(x+0.5,y+0.5-(this.options.axisMarkerSize/2));
 			cx.closePath();
 			cx.stroke();
-			if(this.options.showXAxisMarkerValues){
+			if(this.options.showXAxisMarkerValues && drawLabels){
 				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-x');
 				this.parent.container.adopt(label);
 				label.setStyles({
@@ -149,7 +157,7 @@ Chartr.Types.Line = new Class({
 			cx.lineTo(x+0.5-(this.options.axisMarkerSize/2),y+0.5);
 			cx.closePath();
 			cx.stroke();
-			if(this.options.showYAxisMarkerValues){
+			if(this.options.showYAxisMarkerValues && drawLabels){
 				var label = new Element('span',{html:i}).addClass(this.parent.options.cssclass).addClass(this.parent.options.cssclass+'axis-y');
 				this.parent.container.adopt(label);
 				label.setStyles({
@@ -174,15 +182,24 @@ Chartr.Types.Line = new Class({
 	*	unplot
 	*	remove data from this.plotted
 	*
-	* @param {Ref} data			The points in array format ... eg [[1,2],[3,4]]
-	* @param {Object} scheme		Colour scheme object { pointColor: .., pointType:.., pointSize:.., lineColor: .., lineWidth:.. }
+	* @param {String} ref			The reference to unplot
 	*/
-	unplot: function(data,scheme,ref){
+	unplot: function(ref){
 		this.plotted.each(function(r){ 
 			if(r.ref == ref){
 				this.plotted.erase(r);	
 			}					   
 		},this);
+		this.redraw();
+	},
+	
+	/*
+	*	unplotall
+	*	remove all plotted data
+	*
+	*/
+	unplotall: function(){
+		this.plotted = [];
 		this.redraw();
 	},
 
@@ -295,7 +312,7 @@ Chartr.Types.Line = new Class({
 	redraw: function(){
 		var cx = this.el.getContext('2d');
 		cx.clearRect(0,0,this.el.getSize().x,this.el.getSize().y);
-		this.parent.cleanup();
+		if(this.options.redrawAxes) this.parent.cleanup();
 		this.drawAxes();
 		this.plotted.each(function(d){ this.plotData(d.data,d.scheme); },this);
 	}
