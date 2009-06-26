@@ -216,7 +216,7 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	showall: function(){
-		this.plotted = this.plottedbackup;
+		this.plotted = $A(this.plottedbackup);
 		this.plottedbackup = [];
 		this.redraw();
 	},
@@ -228,9 +228,9 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	hideall: function(){
-		if(this.plottedbackup == []) this.plottedbackup = this.plotted;
+		if(this.plottedbackup == []) this.plottedbackup = $A(this.plotted);
 		this.plotted = [];
-		this.redraw();
+		this.redraw()
 	},
 	
 	/*
@@ -239,10 +239,28 @@ Chartr.Types.Line = new Class({
 	*
 	*/
 	showonly: function(ar){
-		if(this.plottedbackup == []) this.plottedbackup = this.plotted;
+		if(this.plottedbackup == []) this.plottedbackup = $A(this.plotted);
 		this.plotted = [];
+		if($type(ar) != 'array') ar = [];
 		this.plottedbackup.each(function(r){ 
 			if(ar.contains(r.ref)){
+				this.plotted.push(r);	
+			}					   
+		},this);		
+		this.redraw();
+	},
+	
+	/*
+	*	hideonly
+	*	hide only the data from the references in the passed array
+	*
+	*/
+	hideonly: function(ar){
+		if(this.plottedbackup == []) this.plottedbackup = $A(this.plotted);
+		this.plotted = [];
+		if($type(ar) != 'array') ar = [];
+		this.plottedbackup.each(function(r){ 
+			if(!ar.contains(r.ref)){
 				this.plotted.push(r);	
 			}					   
 		},this);		
